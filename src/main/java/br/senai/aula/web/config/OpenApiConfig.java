@@ -12,7 +12,7 @@ public class OpenApiConfig {
     public OpenAPI webOpenApi() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("API de Usuários")
+                        .title("Users API")
                         .description("Documentação dos endpoints da aplicação")
                         .version("v1"));
     }
