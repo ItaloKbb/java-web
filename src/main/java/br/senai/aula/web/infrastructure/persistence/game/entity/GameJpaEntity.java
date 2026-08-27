@@ -20,16 +20,16 @@ public class GameJpaEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, default = 4)
+    @Column(nullable = false)
     private Int maxPlayers;
 
-    @OneToOne(mappedBy = "games", cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
-    private CoinJpaEntity coin;
+    @OneToMany(mappedBy = "games", cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
+    private RoundJpaEntity round;
 
     protected GameJpaEntity() {
     }
 
-    public GameJpaEntity(Long id, String name, Int? maxPlayers) {
+    public GameJpaEntity(Long id, String name, Int maxPlayers) {
         this.id = id;
         this.name = name;
         this.maxPlayers = maxPlayers;
