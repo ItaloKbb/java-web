@@ -16,7 +16,7 @@ public final class PuzzlePersistenceMapper {
         return new Puzzle(
                 entity.getId(),
                 entity.getAlternativas(),
-                entity.getAlternativaCorretas()
+                entity.getAlternativaCorreta()
         );
     }
 }

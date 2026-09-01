@@ -1,4 +1,4 @@
-package br.senai.aula.web.infrastructure.persistence.user.repository;
+package br.senai.aula.web.infrastructure.persistence.game.repository;
 
 import br.senai.aula.web.infrastructure.persistence.user.entity.UserJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

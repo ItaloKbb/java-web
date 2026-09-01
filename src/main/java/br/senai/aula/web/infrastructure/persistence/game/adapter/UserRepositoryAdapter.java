@@ -1,4 +1,4 @@
-package br.senai.aula.web.infrastructure.persistence.user.adapter;
+package br.senai.aula.web.infrastructure.persistence.game.adapter;
 
 import br.senai.aula.web.application.user.port.out.UserRepositoryPort;
 import br.senai.aula.web.domain.user.User;

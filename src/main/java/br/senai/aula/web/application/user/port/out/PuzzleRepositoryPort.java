@@ -10,5 +10,5 @@ public interface PuzzleRepositoryPort {
 
     Optional<Puzzle> findById(Long id);
 
-    Optional<Puzzle[]> FindAll();
+    Optional<Puzzle[]> findAll();
 }

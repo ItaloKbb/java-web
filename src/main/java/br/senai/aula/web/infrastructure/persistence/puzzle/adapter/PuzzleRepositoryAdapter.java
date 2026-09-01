@@ -33,6 +33,9 @@ public class PuzzleRepositoryAdapter implements PuzzleRepositoryPort {
     @Override
     @Transactional(readOnly = true)
     public Optional<Puzzle[]> findAll() {
-        return repository.findAll().map(PuzzlePersistenceMapper::toDomain);
+        return Optional.of(repository.findAll()
+                .stream()
+                .map(PuzzlePersistenceMapper::toDomain)
+                .toArray(Puzzle[]::new));
     }
 }

@@ -1,4 +1,4 @@
-package br.senai.aula.web.infrastructure.persistence.user.entity;
+package br.senai.aula.web.infrastructure.persistence.game.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -6,8 +6,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "games")
@@ -21,25 +24,18 @@ public class GameJpaEntity {
     private String name;
 
     @Column(nullable = false)
-    private Int maxPlayers;
+    private Integer maxPlayers;
 
-    @OneToMany(mappedBy = "games", cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
-    private RoundJpaEntity round;
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoundJpaEntity> rounds = new ArrayList<>();
 
     protected GameJpaEntity() {
     }
 
-    public GameJpaEntity(Long id, String name, Int maxPlayers) {
+    public GameJpaEntity(Long id, String name, Integer maxPlayers) {
         this.id = id;
         this.name = name;
         this.maxPlayers = maxPlayers;
-    }
-
-    public void setCoin(CoinJpaEntity coin) {
-        this.coin = coin;
-        if (coin != null && coin.getUser() != this) {
-            coin.setUser(this);
-        }
     }
 
     public Long getId() {
@@ -50,11 +46,11 @@ public class GameJpaEntity {
         return name;
     }
 
-    public String getEmail() {
-        return email;
+    public Integer getMaxPlayers() {
+        return maxPlayers;
     }
 
-    public CoinJpaEntity getCoin() {
-        return coin;
+    public List<RoundJpaEntity> getRounds() {
+        return rounds;
     }
 }
