@@ -29,7 +29,7 @@ public class PuzzleJpaEntity {
     protected puzzleEntity(){
     }
      
-    public UserJpaEntity(Long id, String[] alternativas, Integer alternativaCorreta) {
+    public PuzzleJpaEntity(Long id, String[] alternativas, Integer alternativaCorreta) {
         this.id = id;
         this.alternativas = alternativas;
         this.alternativaCorreta = alternativaCorreta;

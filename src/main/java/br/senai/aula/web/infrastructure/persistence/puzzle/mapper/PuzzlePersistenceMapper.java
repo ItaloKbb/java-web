@@ -8,8 +8,8 @@ public final class PuzzlePersistenceMapper {
     private PuzzlePersistenceMapper() {
     }
 
-    public static PuzzleJpaEntity toEntity(Puzzle puzzle) {
-        PuzzleJpaEntity entity = new PuzzleJpaEntity(puzzle.id(), puzzle.alternativas(), puzzle.alternativaCorreta());
+    public static PuzzleJpaEntity toEntity(Puzzle domain) {
+        return new PuzzleJpaEntity(domain.id(), domain.alternativas(), domain.alternativaCorreta());
     }
 
     public static Puzzle toDomain(PuzzleJpaEntity entity) {
