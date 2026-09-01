@@ -23,7 +23,7 @@ public class RoundJpaEntity {
     @Column(nullable = false)
     private Integer number;
 
-    @OneToMany(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "game_id", nullable = false)
     private GameJpaEntity game;
 
