@@ -1,4 +1,4 @@
-package br.senai.aula.web.infrastructure.card;
+package br.senai.aula.web.infrastructure.persistence.card.entity;
 
 import br.senai.aula.web.domain.cards.Naipe;
 import br.senai.aula.web.domain.cards.Valor;

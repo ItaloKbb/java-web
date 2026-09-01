@@ -1,6 +1,7 @@
 package br.senai.aula.web.application.user.service;
 
-import br.senai.aula.web.application.user.port.out.UserRepositoryPort;
+import br.senai.aula.web.application.port.out.UserRepositoryPort;
+import br.senai.aula.web.application.service.CreateUserService;
 import br.senai.aula.web.domain.user.User;
 import org.junit.jupiter.api.Test;
 
