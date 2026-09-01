@@ -1,3 +1,5 @@
+package br.senai.aula.web.infrastructure.persistence.skills.entity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

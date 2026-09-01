@@ -1,6 +1,6 @@
 package br.senai.aula.web.infrastructure.persistence.puzzle.adapter;
 
-import br.senai.aula.web.application.puzzle.port.out.PuzzleRepositoryPort;
+import br.senai.aula.web.application.port.out.PuzzleRepositoryPort;
 import br.senai.aula.web.domain.puzzle.Puzzle;
 import br.senai.aula.web.infrastructure.persistence.puzzle.mapper.PuzzlePersistenceMapper;
 import br.senai.aula.web.infrastructure.persistence.puzzle.repository.PuzzleJpaRepository;

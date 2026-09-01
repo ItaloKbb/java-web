@@ -1,6 +1,6 @@
 package br.senai.aula.web.infrastructure.web.user.controller;
 
-import br.senai.aula.web.application.user.exception.UserNotFoundException;
+import br.senai.aula.web.application.exception.UserNotFoundException;
 import br.senai.aula.web.infrastructure.web.user.response.ApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

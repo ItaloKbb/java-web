@@ -1,4 +1,4 @@
-package br.senai.aula.web.application.user.port.out;
+package br.senai.aula.web.application.port.out;
 
 import br.senai.aula.web.domain.user.User;
 

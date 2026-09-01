@@ -1,7 +1,7 @@
-package br.senai.aula.web.application.user.service;
+package br.senai.aula.web.application.service;
 
-import br.senai.aula.web.application.user.port.in.CreateUserUseCase;
-import br.senai.aula.web.application.user.port.out.UserRepositoryPort;
+import br.senai.aula.web.application.port.in.CreateUserUseCase;
+import br.senai.aula.web.application.port.out.UserRepositoryPort;
 import br.senai.aula.web.domain.user.User;
 
 public class CreateUserService implements CreateUserUseCase {

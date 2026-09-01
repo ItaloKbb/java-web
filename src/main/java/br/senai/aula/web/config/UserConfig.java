@@ -1,10 +1,10 @@
 package br.senai.aula.web.config;
 
-import br.senai.aula.web.application.user.port.in.CreateUserUseCase;
-import br.senai.aula.web.application.user.port.in.GetUserCoinUseCase;
-import br.senai.aula.web.application.user.port.out.UserRepositoryPort;
-import br.senai.aula.web.application.user.service.CreateUserService;
-import br.senai.aula.web.application.user.service.GetUserCoinService;
+import br.senai.aula.web.application.port.in.CreateUserUseCase;
+import br.senai.aula.web.application.port.in.GetUserCoinUseCase;
+import br.senai.aula.web.application.port.out.UserRepositoryPort;
+import br.senai.aula.web.application.service.CreateUserService;
+import br.senai.aula.web.application.service.GetUserCoinService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

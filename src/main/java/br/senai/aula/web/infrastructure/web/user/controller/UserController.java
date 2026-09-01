@@ -1,7 +1,7 @@
 package br.senai.aula.web.infrastructure.web.user.controller;
 
-import br.senai.aula.web.application.user.port.in.CreateUserUseCase;
-import br.senai.aula.web.application.user.port.in.GetUserCoinUseCase;
+import br.senai.aula.web.application.port.in.CreateUserUseCase;
+import br.senai.aula.web.application.port.in.GetUserCoinUseCase;
 import br.senai.aula.web.domain.user.User;
 import br.senai.aula.web.infrastructure.web.user.request.CreateUserRequest;
 import br.senai.aula.web.infrastructure.web.user.response.CoinResponse;
