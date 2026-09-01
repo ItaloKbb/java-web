@@ -1,4 +1,4 @@
-package br.senai.aula.web.application.user.exception;
+package br.senai.aula.web.application.exception;
 
 public class UserNotFoundException extends RuntimeException {
 

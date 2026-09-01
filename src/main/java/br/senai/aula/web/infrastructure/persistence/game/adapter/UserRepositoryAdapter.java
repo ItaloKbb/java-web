@@ -1,6 +1,6 @@
 package br.senai.aula.web.infrastructure.persistence.game.adapter;
 
-import br.senai.aula.web.application.user.port.out.UserRepositoryPort;
+import br.senai.aula.web.application.port.out.UserRepositoryPort;
 import br.senai.aula.web.domain.user.User;
 import br.senai.aula.web.infrastructure.persistence.user.mapper.UserPersistenceMapper;
 import br.senai.aula.web.infrastructure.persistence.user.repository.UserJpaRepository;
