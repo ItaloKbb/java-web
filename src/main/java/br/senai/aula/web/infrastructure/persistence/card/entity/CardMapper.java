@@ -1,6 +1,8 @@
 package br.senai.aula.web.infrastructure.card;
 
 import br.senai.aula.web.domain.cards.Card;
+import br.senai.aula.web.infrastructure.persistence.card.entity.CardEntity;
+
 
 public class CardMapper {
 
