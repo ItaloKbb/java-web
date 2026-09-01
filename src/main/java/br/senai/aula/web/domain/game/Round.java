@@ -1,6 +1,6 @@
 package br.senai.aula.web.domain.game;
 
-enum statusRound{
+public enum statusRound{
     EM_ANDAMENTO, FINALIZADO
 }
 
