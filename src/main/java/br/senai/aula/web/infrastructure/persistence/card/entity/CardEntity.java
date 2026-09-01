@@ -1,4 +1,4 @@
-package br.senai.aula.web.infrastructure.card;
+package br.senai.aula.web.infrastructure.persistence.card.entity;
 
 import br.senai.aula.web.domain.cards.Naipe;
 import br.senai.aula.web.domain.cards.Valor;
@@ -20,9 +20,6 @@ public class CardEntity {
     @Column(nullable = false)
     private Naipe naipe;
 
-    public CardEntity() {
-    }
-
     public CardEntity(Long id, Valor valor, Naipe naipe) {
         this.id = id;
         this.valor = valor;
@@ -40,8 +37,9 @@ public class CardEntity {
     public Naipe getNaipe() {
         return naipe;
     }
-    protected CardEntity
-    {}
+    protected CardEntity() {
+    }
+
     public void setId(Long id) {
         this.id = id;
     }

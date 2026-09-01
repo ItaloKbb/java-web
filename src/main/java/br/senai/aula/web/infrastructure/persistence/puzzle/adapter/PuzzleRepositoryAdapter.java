@@ -1,6 +1,6 @@
 package br.senai.aula.web.infrastructure.persistence.puzzle.adapter;
 
-import br.senai.aula.web.application.puzzle.port.out.PuzzleRepositoryPort;
+import br.senai.aula.web.application.port.out.PuzzleRepositoryPort;
 import br.senai.aula.web.domain.puzzle.Puzzle;
 import br.senai.aula.web.infrastructure.persistence.puzzle.mapper.PuzzlePersistenceMapper;
 import br.senai.aula.web.infrastructure.persistence.puzzle.repository.PuzzleJpaRepository;
@@ -33,6 +33,9 @@ public class PuzzleRepositoryAdapter implements PuzzleRepositoryPort {
     @Override
     @Transactional(readOnly = true)
     public Optional<Puzzle[]> findAll() {
-        return repository.findAll().map(PuzzlePersistenceMapper::toDomain);
+        return Optional.of(repository.findAll()
+                .stream()
+                .map(PuzzlePersistenceMapper::toDomain)
+                .toArray(Puzzle[]::new));
     }
 }

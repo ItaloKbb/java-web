@@ -1,4 +1,4 @@
-package br.senai.aula.web.infrastructure.persistence.user.entity;
+package br.senai.aula.web.infrastructure.persistence.game.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

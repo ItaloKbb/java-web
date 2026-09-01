@@ -1,4 +1,4 @@
-package br.senai.aula.web.application.puzzle.port.out;
+package br.senai.aula.web.application.port.out;
 
 import br.senai.aula.web.domain.puzzle.Puzzle;
 
@@ -10,5 +10,5 @@ public interface PuzzleRepositoryPort {
 
     Optional<Puzzle> findById(Long id);
 
-    Optional<Puzzle[]> FindAll();
+    Optional<Puzzle[]> findAll();
 }
