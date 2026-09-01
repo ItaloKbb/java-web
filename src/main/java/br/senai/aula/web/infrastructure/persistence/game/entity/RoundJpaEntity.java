@@ -1,4 +1,4 @@
-package br.senai.aula.web.infrastructure.persistence.user.entity;
+package br.senai.aula.web.infrastructure.persistence.game.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,10 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "round")
@@ -30,24 +28,21 @@ public class RoundJpaEntity {
     protected RoundJpaEntity() {
     }
 
-    public RoundJpaEntity(Long id, BigDecimal balance) {
+    public RoundJpaEntity(Long id, Integer number, GameJpaEntity game) {
         this.id = id;
-        this.balance = balance;
-    }
-
-    public void setUser(UserJpaEntity user) {
-        this.user = user;
+        this.number = number;
+        this.game = game;
     }
 
     public Long getId() {
         return id;
     }
 
-    public BigDecimal getBalance() {
-        return balance;
+    public Integer getNumber() {
+        return number;
     }
 
-    public UserJpaEntity getUser() {
-        return user;
+    public GameJpaEntity getGame() {
+        return game;
     }
 }

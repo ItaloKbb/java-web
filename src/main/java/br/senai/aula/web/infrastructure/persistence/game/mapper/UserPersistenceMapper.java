@@ -1,4 +1,4 @@
-package br.senai.aula.web.infrastructure.persistence.user.mapper;
+package br.senai.aula.web.infrastructure.persistence.game.mapper;
 
 import br.senai.aula.web.domain.user.Coin;
 import br.senai.aula.web.domain.user.User;

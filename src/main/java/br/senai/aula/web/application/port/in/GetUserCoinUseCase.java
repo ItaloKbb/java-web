@@ -1,4 +1,4 @@
-package br.senai.aula.web.application.user.port.in;
+package br.senai.aula.web.application.port.in;
 
 import br.senai.aula.web.domain.user.Coin;
 
