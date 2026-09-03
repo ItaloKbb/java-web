@@ -1,16 +1,11 @@
 package br.senai.aula.web.domain.skills;
 
-enum SkillType {
+import br.senai.aula.web.domain.cards.Naipe;
 
-    BLOCK, THEFT, INVERTS, BUY, BURN, SURPRISE, PUZZLE, CHANGEOFHANDS, BOMB, SHIELD
+public record Skills(Long id, String name, String description, SkillType type, Naipe naipe) {
 
-}
-
-public record Skills(Long id, String name, String description, SkillType type) {
-
-    public static Skills newSkill(String name, String description, SkillType type) {
-        return new Skills(null, name, description, type);
+    public static Skills newSkill(String name, String description, SkillType type, Naipe naipe) {
+        return new Skills(null, name, description, type, naipe);
     }
-
 
 }
