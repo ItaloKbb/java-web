@@ -1089,3 +1089,29 @@ Para executar e experimentar:
 ```powershell
 .\gradlew.bat bootRun
 ```
+
+## Configuração no IntelliJ IDEA
+
+O projeto já possui uma configuração compartilhada em `.idea` para o IntelliJ IDEA. Ela vincula o projeto ao Gradle Wrapper e define Java 17 como SDK e JVM do Gradle.
+
+### Abrir o projeto
+
+1. No IntelliJ IDEA, selecione **File > Open**.
+2. Abra a pasta raiz do repositório, a mesma que contém `build.gradle` e `settings.gradle`.
+3. Confirme a importação como projeto Gradle.
+4. Aguarde a sincronização das dependências.
+
+Em **File > Project Structure**, confirme:
+
+- **Project SDK**: Java 17;
+- **Language level**: 17;
+- `src/main/java`: Sources Root;
+- `src/test/java`: Test Sources Root.
+
+Em **Settings > Build, Execution, Deployment > Build Tools > Gradle**, confirme que o Gradle JVM está configurado como Java 17. Para executar a aplicação, use a classe `br.senai.aula.web.WebApplication` ou a tarefa Gradle `bootRun`.
+
+O arquivo `.github/workflows/deploy.yml` é um workflow YAML do GitHub Actions. A linguagem exibida pelo IntelliJ depende do arquivo aberto; para verificar o suporte Java, abra qualquer arquivo `.java` dentro de `src/main/java`.
+
+### Se um arquivo Java aparecer como JavaScript
+
+Abra **Settings > Editor > File Types**, selecione **JavaScript** e remova qualquer associação para `*.java`. Depois, selecione **Java** e confirme a associação `*.java`.
