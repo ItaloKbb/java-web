@@ -1,8 +1,8 @@
-package br.senai.aula.web.infrastructure.card;
+package br.senai.aula.web.infrastructure.persistence.card.entity.adapter;
 
 import br.senai.aula.web.domain.cards.Card;
 import br.senai.aula.web.domain.cards.CardRepository;
-import br.senai.aula.web.infrastructure.persistence.card.entity.CardEntity;
+import br.senai.aula.web.infrastructure.persistence.card.entity.entity.CardEntity;
 
 import org.springframework.stereotype.Repository;
 
