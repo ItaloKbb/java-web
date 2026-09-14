@@ -14,7 +14,8 @@ public final class SkillsPersistenceMapper {
                 skill.name(),
                 skill.description(),
                 skill.type(),
-                skill.naipe()
+                skill.naipe(),
+                skill.valor()
         );
     }
 
@@ -24,7 +25,8 @@ public final class SkillsPersistenceMapper {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getType(),
-                entity.getNaipe()
+                entity.getNaipe(),
+                entity.getValor()
         );
     }
 }

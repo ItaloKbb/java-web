@@ -2,8 +2,8 @@ package br.senai.aula.web.infrastructure.persistence.skills.adapter;
 
 import br.senai.aula.web.application.port.out.SkillsRepositoryPort;
 import br.senai.aula.web.domain.skills.Skills;
-import br.senai.aula.web.infrastructure.persistence.skills.entity.SkillsJpaEntity;
 import br.senai.aula.web.infrastructure.persistence.skills.mapper.SkillsPersistenceMapper;
+import br.senai.aula.web.infrastructure.persistence.skills.entity.SkillsJpaEntity;
 import br.senai.aula.web.infrastructure.persistence.skills.repository.SkillsJpaRepository;
 import org.springframework.stereotype.Repository;
 
