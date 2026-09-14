@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoundJpaRepository
         extends JpaRepository<RoundJpaEntity, Long> {
+
+    long countByGameId(Long gameId);
 }
