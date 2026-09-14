@@ -1,6 +1,6 @@
 package br.senai.aula.web.application.service;
 
-import br.senai.aula.web.application.port.in.GetUserCoinUseCase;
+import br.senai.aula.web.application.port.in.user.GetUserCoinUseCase;
 import br.senai.aula.web.application.port.out.UserRepositoryPort;
 import br.senai.aula.web.domain.user.Coin;
 import br.senai.aula.web.application.exception.UserNotFoundException;

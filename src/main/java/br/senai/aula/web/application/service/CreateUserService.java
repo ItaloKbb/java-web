@@ -1,6 +1,6 @@
 package br.senai.aula.web.application.service;
 
-import br.senai.aula.web.application.port.in.CreateUserUseCase;
+import br.senai.aula.web.application.port.in.user.CreateUserUseCase;
 import br.senai.aula.web.application.port.out.UserRepositoryPort;
 import br.senai.aula.web.domain.user.User;
 

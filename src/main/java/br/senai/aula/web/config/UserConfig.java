@@ -1,7 +1,7 @@
 package br.senai.aula.web.config;
 
-import br.senai.aula.web.application.port.in.CreateUserUseCase;
-import br.senai.aula.web.application.port.in.GetUserCoinUseCase;
+import br.senai.aula.web.application.port.in.user.CreateUserUseCase;
+import br.senai.aula.web.application.port.in.user.GetUserCoinUseCase;
 import br.senai.aula.web.application.port.out.UserRepositoryPort;
 import br.senai.aula.web.application.service.CreateUserService;
 import br.senai.aula.web.application.service.GetUserCoinService;
