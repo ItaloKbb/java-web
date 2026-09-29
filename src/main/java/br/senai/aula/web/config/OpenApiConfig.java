@@ -12,8 +12,8 @@ public class OpenApiConfig {
     public OpenAPI webOpenApi() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Users API")
-                        .description("Documentação dos endpoints da aplicação")
+                        .title("Truno Crazzy API")
+                        .description("API para usuários, cartas, habilidades, puzzles e partidas")
                         .version("v1"));
     }
 }
