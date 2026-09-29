@@ -1,36 +1,6 @@
 package br.senai.aula.web.infrastructure.web.skill.controller;
-
-import br.senai.aula.web.application.port.in.skill.CreateSkillUseCase;
-import br.senai.aula.web.application.port.in.skill.DeleteSkillUseCase;
-import br.senai.aula.web.domain.skills.Skills;
-import br.senai.aula.web.infrastructure.web.skill.request.CreateSkillRequest;
+import br.senai.aula.web.infrastructure.persistence.skills.repository.SkillsJpaRepository;
 import br.senai.aula.web.infrastructure.web.skill.response.SkillResponse;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-@RestController
-@RequestMapping("/skills")
-public class SkillController {
-
-    private final CreateSkillUseCase createSkillUseCase;
-    private final DeleteSkillUseCase deleteSkillUseCase;
-
-    public SkillController(CreateSkillUseCase createSkillUseCase, DeleteSkillUseCase deleteSkillUseCase) {
-        this.createSkillUseCase = createSkillUseCase;
-        this.deleteSkillUseCase = deleteSkillUseCase;
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public SkillResponse create(@Valid @RequestBody CreateSkillRequest request) {
-        Skills skill = createSkillUseCase.create(request.name(), request.description(), request.type(), request.naipe(), request.valor());
-        return SkillResponse.from(skill);
-    }
-
-    @DeleteMapping("/{skillId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long skillId) {
-        deleteSkillUseCase.delete(skillId);
-    }
-}
+import java.util.List;
+@RestController @RequestMapping("/skills") public class SkillController {private final SkillsJpaRepository skills;public SkillController(SkillsJpaRepository skills){this.skills=skills;}@GetMapping public List<SkillResponse> list(){return skills.findAll().stream().map(s->new SkillResponse(s.getId(),s.getName(),s.getDescription(),s.getType(),s.getNaipe(),s.getValor())).toList();}}

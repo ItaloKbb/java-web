@@ -1,8 +1,11 @@
 package br.senai.aula.web.infrastructure.web;
 
-import br.senai.aula.web.application.exception.UserNotFoundException;
 import br.senai.aula.web.application.puzzle.exception.PuzzleNotFoundException;
 import br.senai.aula.web.infrastructure.web.response.ApiErrorResponse;
+import br.senai.aula.web.application.auth.UnauthorizedException;
+import br.senai.aula.web.application.auth.ForbiddenException;
+import org.springframework.dao.OptimisticLockingFailureException;
+import jakarta.persistence.OptimisticLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,8 +18,25 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiErrorResponse handleUnauthorized(UnauthorizedException exception) {
+        return new ApiErrorResponse(exception.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiErrorResponse handleForbidden(ForbiddenException exception) {
+        return new ApiErrorResponse(exception.getMessage());
+    }
+
+    @ExceptionHandler({OptimisticLockException.class, OptimisticLockingFailureException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiErrorResponse handleOptimisticLock(Exception exception) {
+        return new ApiErrorResponse("O estado do jogo mudou; atualize e tente novamente");
+    }
+
     @ExceptionHandler({
-            UserNotFoundException.class,
             PuzzleNotFoundException.class,
             NoSuchElementException.class
     })

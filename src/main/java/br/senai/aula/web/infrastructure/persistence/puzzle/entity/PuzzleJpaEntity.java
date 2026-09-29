@@ -16,6 +16,9 @@ public class PuzzleJpaEntity {
     private Long id;
 
     @Column(nullable = false)
+    private String question;
+
+    @Column(nullable = false)
     private String[] alternativas;
 
     @Column(nullable = false)
@@ -26,6 +29,13 @@ public class PuzzleJpaEntity {
 
     public PuzzleJpaEntity(Long id, String[] alternativas, Integer alternativaCorreta) {
         this.id = id;
+        this.question = "Escolha a alternativa correta";
+        this.alternativas = alternativas;
+        this.alternativaCorreta = alternativaCorreta;
+    }
+
+    public PuzzleJpaEntity(String question, String[] alternativas, Integer alternativaCorreta) {
+        this.question = question;
         this.alternativas = alternativas;
         this.alternativaCorreta = alternativaCorreta;
     }
@@ -33,6 +43,8 @@ public class PuzzleJpaEntity {
     public Long getId() {
         return id;
     }
+
+    public String getQuestion() { return question; }
 
     public String[] getAlternativas() {
         return alternativas;

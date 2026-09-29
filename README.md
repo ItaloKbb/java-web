@@ -1,17 +1,6 @@
 # Truno Crazzy API
 
-API didática desenvolvida em Java com Spring Boot. O projeto organiza domínio, casos de uso, entrada HTTP e persistência em camadas separadas, mantendo uma implementação simples para estudo.
-
-## Tecnologias
-
-- Java 17
-- Spring Boot 4
-- Spring Web MVC
-- Spring Data JPA
-- Jakarta Bean Validation
-- H2 Database
-- OpenAPI/Swagger
-- Gradle Wrapper
+API didática em Java 17 e Spring Boot para partidas completas de Truno Crazzy. O cliente Angular consome a API por REST e pode consultar o estado da partida aproximadamente a cada segundo.
 
 ## Executar
 
@@ -21,127 +10,84 @@ No Windows:
 .\gradlew.bat bootRun
 ```
 
-No Linux ou macOS:
+A API usa `http://localhost:3000` e o Swagger fica em `http://localhost:3000/swagger-ui.html`. O banco H2 é persistido em `data/` e permite retomar partidas depois de reiniciar a aplicação.
 
-```bash
-./gradlew bootRun
+O CORS permite inicialmente `http://localhost:4200`. Outros endereços podem ser informados, separados por vírgula, em `app.cors.allowed-origins`.
+
+## Autenticação
+
+Crie ou acesse uma conta com:
+
+```http
+POST /auth/sessions
+Content-Type: application/json
+
+{"nickname":"Maria","code":"1234"}
 ```
 
-A aplicação utiliza a porta `3000`:
+O primeiro acesso cria a conta. Os seguintes validam o mesmo `code`. A resposta contém um token; envie-o nas demais ações:
 
-```text
-http://localhost:3000
+```http
+X-Player-Token: token-retornado
 ```
 
-O Swagger fica disponível em:
+Um novo login invalida o token anterior.
 
-```text
-http://localhost:3000/swagger-ui.html
-```
+## Fluxo de uma partida
 
-O banco H2 funciona em memória e é recriado sempre que a aplicação inicia.
-
-## Endpoints
-
-### Usuários
-
-| Método | Rota | Descrição |
+| Método | Rota | Uso |
 |---|---|---|
-| `POST` | `/users` | Cria um usuário com saldo inicial zerado |
-| `GET` | `/users/{userId}/coins` | Consulta o saldo do usuário |
+| `POST` | `/games` | Cria o lobby e adiciona o host |
+| `POST` | `/games/access` | Entra pelo código de seis caracteres |
+| `POST` | `/games/{id}/start` | Host inicia com dois ou mais jogadores |
+| `GET` | `/games/{id}/state` | Consulta o estado agregado e a própria mão |
+| `POST` | `/games/{id}/plays` | Joga uma carta da própria mão |
+| `POST` | `/games/{id}/puzzle-answers` | Responde ao desafio pendente |
+| `POST` | `/games/{id}/trophies` | Compra no máximo um troféu na janela atual |
+| `POST` | `/games/{id}/ready` | Passa/confirma a janela entre rodadas |
+| `POST` | `/games/{id}/cancel` | Host cancela a partida |
+| `GET` | `/users/ranking` | Lista o ranking permanente |
 
-Exemplo para criar um usuário:
+Exemplo de criação:
 
 ```json
 {
-  "name": "Maria",
-  "email": "maria@exemplo.com"
+  "name": "Sala 1",
+  "maxPlayers": 4,
+  "initialCards": 3,
+  "roundReward": 2,
+  "emptyHandReward": 1,
+  "trophyPrice": 5
 }
 ```
 
-### Cartas
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/cards` | Cria uma carta |
-| `GET` | `/cards` | Lista as cartas |
-| `GET` | `/cards/{cardId}` | Busca uma carta |
-| `DELETE` | `/cards/{cardId}` | Exclui uma carta |
-
-Exemplo:
+Para jogar uma carta, use o `handCardId` recebido somente na mão do jogador autenticado:
 
 ```json
-{
-  "valor": "AS",
-  "naipe": "COPAS"
-}
+{"handCardId": 18}
 ```
 
-### Habilidades
+O campo `stateVersion` muda depois de cada ação. O Angular pode ignorar respostas cuja versão já tenha processado. As mãos adversárias expõem somente `handSize`; puzzles nunca expõem `alternativaCorreta`.
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/skills` | Cria uma habilidade |
-| `DELETE` | `/skills/{skillId}` | Exclui uma habilidade |
+## Catálogos
 
-### Puzzles
+As 40 cartas, dez skills e puzzles demonstrativos são carregados de forma idempotente. São somente leitura pela API:
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/puzzles` | Cria um puzzle |
-| `GET` | `/puzzles` | Lista os puzzles |
-| `GET` | `/puzzles/{puzzleId}` | Busca um puzzle |
+- `GET /cards` e `GET /cards/{id}`;
+- `GET /skills`;
+- `GET /puzzles` e `GET /puzzles/{id}`.
 
-Exemplo:
+## Erros
 
-```json
-{
-  "alternativas": ["Azul", "Verde", "Vermelho"],
-  "alternativaCorreta": 1
-}
-```
+Todos os erros retornam `{"message":"..."}`:
 
-`alternativaCorreta` representa a posição da resposta no array, começando em zero.
+- `400`: entrada inválida;
+- `401`: token ou credenciais inválidas;
+- `403`: usuário sem permissão ou carta de outro jogador;
+- `404`: recurso não encontrado;
+- `409`: fase, turno ou versão conflitante.
 
-### Partidas
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/games` | Cria uma partida |
-| `GET` | `/games/{gameId}` | Busca uma partida |
-| `POST` | `/games/{gameId}/players` | Adiciona um usuário à partida |
-| `GET` | `/games/{gameId}/players` | Lista os jogadores |
-| `POST` | `/games/{gameId}/rounds` | Inicia uma rodada |
-| `GET` | `/games/rounds/{roundId}` | Busca uma rodada |
-| `POST` | `/games/rounds/{roundId}/finish` | Finaliza uma rodada |
-| `POST` | `/games/deck` | Cria um deck |
-
-Uma partida aceita de 2 a 6 jogadores. O mesmo usuário não pode ser adicionado duas vezes à mesma partida.
-
-## Respostas de erro
-
-Os erros utilizam o formato:
-
-```json
-{
-  "message": "Descrição do problema"
-}
-```
-
-- `400 Bad Request`: dados ou regra de entrada inválidos;
-- `404 Not Found`: recurso não encontrado;
-- `409 Conflict`: registro duplicado, partida cheia ou operação repetida.
-
-## Estrutura principal
-
-```text
-domain/          regras e objetos do domínio
-application/     casos de uso, serviços e portas
-infrastructure/  controllers, DTOs, JPA, adapters e mappers
-config/          configuração dos casos de uso no Spring
-```
-
-Para conferir apenas o código principal, sem executar testes:
+Para conferir apenas a compilação, sem testes:
 
 ```powershell
 .\gradlew.bat compileJava
