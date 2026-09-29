@@ -1,4 +1,4 @@
-package br.senai.aula.web.infrastructure.web.user.card;
+package br.senai.aula.web.infrastructure.web.card;
 
 import br.senai.aula.web.domain.cards.Card;
 import br.senai.aula.web.domain.cards.Naipe;
@@ -11,11 +11,6 @@ public record CardResponse(
 ) {
 
     public static CardResponse from(Card card) {
-        return new CardResponse(
-                card.id(),
-                card.valor(),
-                card.naipe()
-        );
+        return new CardResponse(card.id(), card.valor(), card.naipe());
     }
-
 }

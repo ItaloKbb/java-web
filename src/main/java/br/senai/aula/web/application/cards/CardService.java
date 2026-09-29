@@ -36,6 +36,7 @@ public class CardService implements CreateCardUseCase, FindCardByIdUseCase, List
 
     @Override
     public void deleteById(Long id) {
+        findById(id);
         cardRepository.deleteById(id);
     }
 }
