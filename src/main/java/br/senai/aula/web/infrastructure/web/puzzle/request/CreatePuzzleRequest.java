@@ -1,11 +1,16 @@
 package br.senai.aula.web.infrastructure.web.puzzle.request;
 
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 public record CreatePuzzleRequest(
-        @Positive(message = "Adicione algumas charadas") String[] alternativas,
-        @NotNull(message = "Adicione a resposta correta") Integer alternativaCorreta
+        @NotNull(message = "Adicione as alternativas")
+        @Size(min = 2, message = "Adicione pelo menos duas alternativas")
+        String[] alternativas,
+        @NotNull(message = "Adicione a resposta correta")
+        @PositiveOrZero(message = "A resposta correta deve ser uma posição válida")
+        Integer alternativaCorreta
 ) {
 }
 

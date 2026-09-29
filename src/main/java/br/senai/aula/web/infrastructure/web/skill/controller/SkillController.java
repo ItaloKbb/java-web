@@ -5,8 +5,6 @@ import br.senai.aula.web.application.port.in.skill.DeleteSkillUseCase;
 import br.senai.aula.web.domain.skills.Skills;
 import br.senai.aula.web.infrastructure.web.skill.request.CreateSkillRequest;
 import br.senai.aula.web.infrastructure.web.skill.response.SkillResponse;
-import br.senai.aula.web.infrastructure.web.user.request.CreateUserRequest;
-import br.senai.aula.web.infrastructure.web.user.response.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -28,5 +26,11 @@ public class SkillController {
     public SkillResponse create(@Valid @RequestBody CreateSkillRequest request) {
         Skills skill = createSkillUseCase.create(request.name(), request.description(), request.type(), request.naipe(), request.valor());
         return SkillResponse.from(skill);
+    }
+
+    @DeleteMapping("/{skillId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long skillId) {
+        deleteSkillUseCase.delete(skillId);
     }
 }

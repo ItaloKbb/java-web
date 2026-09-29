@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RestController
 @RequestMapping("/puzzles")
 public class PuzzleController {
@@ -38,5 +41,11 @@ public class PuzzleController {
         Puzzle puzzle = getPuzzleUseCase.findById(puzzleId);
         return PuzzleResponse.from(puzzle);
     }
+
+    @GetMapping
+    public List<PuzzleResponse> getPuzzles() {
+        return Arrays.stream(getPuzzleUseCase.findAll())
+                .map(PuzzleResponse::from)
+                .toList();
+    }
 }
-  

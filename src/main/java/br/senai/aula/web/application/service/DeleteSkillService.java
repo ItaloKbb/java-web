@@ -2,7 +2,8 @@ package br.senai.aula.web.application.service;
 
 import br.senai.aula.web.application.port.in.skill.DeleteSkillUseCase;
 import br.senai.aula.web.application.port.out.SkillsRepositoryPort;
-import br.senai.aula.web.domain.skills.Skills;
+
+import java.util.NoSuchElementException;
 
 public class DeleteSkillService implements DeleteSkillUseCase {
 
@@ -12,6 +13,8 @@ public class DeleteSkillService implements DeleteSkillUseCase {
 
     @Override
     public void delete(Long id) {
-
+        skillsRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Skill não encontrada: " + id));
+        skillsRepository.deleteById(id);
     }
 }
