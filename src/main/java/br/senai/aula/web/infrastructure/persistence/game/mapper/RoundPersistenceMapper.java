@@ -16,13 +16,15 @@ public final class RoundPersistenceMapper {
         return new RoundJpaEntity(
                 round.id(),
                 round.number(),
+                round.status(),
                 game);
     }
 
     public static Round toDomain(RoundJpaEntity entity) {
         return new Round(
                 entity.getId(),
-                entity.getNumber()
+                entity.getNumber(),
+                entity.getStatus()
         );
     }
 }

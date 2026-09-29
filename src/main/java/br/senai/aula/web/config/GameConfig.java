@@ -2,6 +2,7 @@ package br.senai.aula.web.config;
 
 import br.senai.aula.web.application.port.in.AddPlayerToGameUseCase;
 import br.senai.aula.web.application.port.in.CreateDeckUseCase;
+import br.senai.aula.web.application.port.in.FinishRoundUseCase;
 import br.senai.aula.web.application.port.in.GetGamePlayersUseCase;
 import br.senai.aula.web.application.port.in.GetGameUseCase;
 import br.senai.aula.web.application.port.in.GetRoundUseCase;
@@ -15,6 +16,7 @@ import br.senai.aula.web.application.port.out.RoundRepositoryPort;
 
 import br.senai.aula.web.application.service.AddPlayerToGameService;
 import br.senai.aula.web.application.service.CreateDeckService;
+import br.senai.aula.web.application.service.FinishRoundService;
 import br.senai.aula.web.application.service.GetGamePlayersService;
 import br.senai.aula.web.application.service.GetGameService;
 import br.senai.aula.web.application.service.GetRoundService;
@@ -79,6 +81,13 @@ public class GameConfig {
         return new GetRoundService(
                 roundRepositoryPort
         );
+    }
+
+    @Bean
+    FinishRoundUseCase finishRoundUseCase(
+            RoundRepositoryPort roundRepositoryPort
+    ) {
+        return new FinishRoundService(roundRepositoryPort);
     }
 
     @Bean

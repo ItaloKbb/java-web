@@ -2,6 +2,7 @@ package br.senai.aula.web.infrastructure.web.game.controller;
 
 import br.senai.aula.web.application.port.in.AddPlayerToGameUseCase;
 import br.senai.aula.web.application.port.in.CreateDeckUseCase;
+import br.senai.aula.web.application.port.in.FinishRoundUseCase;
 import br.senai.aula.web.application.port.in.GetGamePlayersUseCase;
 import br.senai.aula.web.application.port.in.GetGameUseCase;
 import br.senai.aula.web.application.port.in.GetRoundUseCase;
@@ -45,6 +46,7 @@ public class GameController {
     private final GetGamePlayersUseCase getGamePlayersUseCase;
     private final StartRoundUseCase startRoundUseCase;
     private final GetRoundUseCase getRoundUseCase;
+    private final FinishRoundUseCase finishRoundUseCase;
     private final CreateDeckUseCase createDeckUseCase;
 
     public GameController(
@@ -54,6 +56,7 @@ public class GameController {
             GetGamePlayersUseCase getGamePlayersUseCase,
             StartRoundUseCase startRoundUseCase,
             GetRoundUseCase getRoundUseCase,
+            FinishRoundUseCase finishRoundUseCase,
             CreateDeckUseCase createDeckUseCase
     ) {
         this.startGameUseCase = startGameUseCase;
@@ -62,6 +65,7 @@ public class GameController {
         this.getGamePlayersUseCase = getGamePlayersUseCase;
         this.startRoundUseCase = startRoundUseCase;
         this.getRoundUseCase = getRoundUseCase;
+        this.finishRoundUseCase = finishRoundUseCase;
         this.createDeckUseCase = createDeckUseCase;
     }
 
@@ -135,6 +139,11 @@ public class GameController {
         Round round = getRoundUseCase.getById(roundId);
 
         return RoundResponse.from(round);
+    }
+
+    @PostMapping("/rounds/{roundId}/finish")
+    public RoundResponse finishRound(@PathVariable Long roundId) {
+        return RoundResponse.from(finishRoundUseCase.finish(roundId));
     }
 
     @PostMapping("/deck")
