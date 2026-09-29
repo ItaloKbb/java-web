@@ -4,6 +4,8 @@ import br.senai.aula.web.application.port.in.GetGameUseCase;
 import br.senai.aula.web.application.port.out.GameRepositoryPort;
 import br.senai.aula.web.domain.game.Game;
 
+import java.util.NoSuchElementException;
+
 public class GetGameService implements GetGameUseCase {
 
     private final GameRepositoryPort gameRepositoryPort;
@@ -16,7 +18,7 @@ public class GetGameService implements GetGameUseCase {
     public Game getById(Long gameId) {
         return gameRepositoryPort.findById(gameId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new NoSuchElementException(
                                 "Jogo não encontrado: " + gameId
                         )
                 );

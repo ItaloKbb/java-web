@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Repository
 public class PlayersRepositoryAdapter implements PlayersRepositoryPort {
@@ -35,11 +36,11 @@ public class PlayersRepositoryAdapter implements PlayersRepositoryPort {
     @Transactional
     public Players add(Long gameId, Long userId) {
         GameJpaEntity game = gameRepository.findById(gameId).orElseThrow(
-                () -> new IllegalArgumentException("Jogo não encontrado: " + gameId)
+                () -> new NoSuchElementException("Jogo não encontrado: " + gameId)
         );
 
         UserJpaEntity user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalArgumentException("Usuário não encontrado: " + userId)
+                () -> new NoSuchElementException("Usuário não encontrado: " + userId)
         );
 
         PlayersJpaEntity entity = new PlayersJpaEntity(null, user, game);

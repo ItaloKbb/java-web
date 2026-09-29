@@ -4,6 +4,8 @@ import br.senai.aula.web.application.port.in.GetRoundUseCase;
 import br.senai.aula.web.application.port.out.RoundRepositoryPort;
 import br.senai.aula.web.domain.game.Round;
 
+import java.util.NoSuchElementException;
+
 public class GetRoundService implements GetRoundUseCase {
 
     private final RoundRepositoryPort roundRepositoryPort;
@@ -19,7 +21,7 @@ public class GetRoundService implements GetRoundUseCase {
 
         return roundRepositoryPort.findById(roundId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new NoSuchElementException(
                                 "Rodada não encontrada: " + roundId
                         )
                 );

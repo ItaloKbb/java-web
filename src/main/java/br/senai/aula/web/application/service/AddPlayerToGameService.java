@@ -6,6 +6,8 @@ import br.senai.aula.web.application.port.out.PlayersRepositoryPort;
 import br.senai.aula.web.domain.game.Game;
 import br.senai.aula.web.domain.game.Players;
 
+import java.util.NoSuchElementException;
+
 public class AddPlayerToGameService implements AddPlayerToGameUseCase {
 
     private final GameRepositoryPort gameRepositoryPort;
@@ -24,7 +26,7 @@ public class AddPlayerToGameService implements AddPlayerToGameUseCase {
 
         Game game = gameRepositoryPort.findById(gameId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new NoSuchElementException(
                                 "Jogo não encontrado: " + gameId
                         )
                 );
