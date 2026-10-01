@@ -3,7 +3,8 @@ package br.senai.aula.web.domain.cards;
 public record Card(
         Long id,
         Valor valor,
-        Naipe naipe
+        Naipe naipe,
+        String url
 ) {
 
     public static Card newCard(
@@ -14,7 +15,8 @@ public record Card(
         return new Card(
                 null,
                 valor,
-                naipe
+                naipe,
+                null
         );
     }
 }

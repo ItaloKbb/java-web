@@ -19,7 +19,7 @@ public class CatalogSeedConfig {
     ApplicationRunner catalogSeed(CardJpaRepository cards, SkillsJpaRepository skills, PuzzleJpaRepository puzzles) {
         return args -> {
             for (Valor valor : Valor.values()) for (Naipe naipe : Naipe.values())
-                cards.findByValorAndNaipe(valor, naipe).orElseGet(() -> cards.save(new CardEntity(null, valor, naipe)));
+                cards.findByValorAndNaipe(valor, naipe).orElseGet(() -> cards.save(new CardEntity(null, valor, naipe, null)));
             seedSkill(skills,"Bloqueio","O próximo jogador perde o turno",SkillType.BLOCK,Naipe.PAUS,Valor.QUATRO);
             seedSkill(skills,"Roubo","Rouba uma carta do próximo jogador",SkillType.THEFT,Naipe.COPAS,Valor.CINCO);
             seedSkill(skills,"Inversão","Inverte o sentido da rodada",SkillType.INVERTS,Naipe.ESPADAS,Valor.SEIS);

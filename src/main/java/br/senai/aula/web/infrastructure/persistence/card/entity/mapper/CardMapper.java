@@ -11,7 +11,8 @@ public class CardMapper {
         return new CardEntity(
                 card.id(),
                 card.valor(),   
-                card.naipe()
+            card.naipe(),
+            card.url()
         );
     }
 
@@ -20,7 +21,8 @@ public class CardMapper {
         return new Card(
                 entity.getId(),
                 entity.getValor(),
-                entity.getNaipe()
+                entity.getNaipe(),
+                entity.getUrl()
         );
     }
 

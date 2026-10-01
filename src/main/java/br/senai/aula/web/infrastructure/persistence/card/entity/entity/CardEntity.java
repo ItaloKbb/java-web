@@ -20,10 +20,13 @@ public class CardEntity {
     @Column(nullable = false)
     private Naipe naipe;
 
-    public CardEntity(Long id, Valor valor, Naipe naipe) {
+    private String url;
+
+    public CardEntity(Long id, Valor valor, Naipe naipe, String url) {
         this.id = id;
         this.valor = valor;
         this.naipe = naipe;
+        this.url = url;
     }
 
     public Long getId() {
@@ -36,6 +39,10 @@ public class CardEntity {
 
     public Naipe getNaipe() {
         return naipe;
+    }
+
+    public String getUrl() {
+        return url;
     }
     protected CardEntity() {
     }
@@ -50,5 +57,9 @@ public class CardEntity {
 
     public void setNaipe(Naipe naipe) {
         this.naipe = naipe;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
