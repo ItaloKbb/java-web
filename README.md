@@ -14,6 +14,8 @@ A API usa `http://localhost:3000` e o Swagger fica em `http://localhost:3000/swa
 
 O CORS permite inicialmente `http://localhost:4200`. Outros endereços podem ser informados, separados por vírgula, em `app.cors.allowed-origins`.
 
+Em um GitHub Codespace, consulte [como acessar a API publicamente](docs/public-forwarding.md) quando o frontend ou outro dispositivo não conseguir usar `localhost`.
+
 ## Autenticação
 
 Crie ou acesse uma conta com:
