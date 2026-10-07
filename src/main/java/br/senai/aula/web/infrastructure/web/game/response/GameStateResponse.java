@@ -5,6 +5,7 @@ import br.senai.aula.web.domain.cards.Valor;
 import br.senai.aula.web.domain.match.Direction;
 import br.senai.aula.web.domain.match.GamePhase;
 import br.senai.aula.web.domain.match.RoundStatus;
+import br.senai.aula.web.domain.match.TheftKind;
 import br.senai.aula.web.domain.skills.SkillType;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public record GameStateResponse(Long id,String code,String name,GamePhase phase,
  public record Settings(Integer maxPlayers,Integer initialCards,Integer roundReward,Integer emptyHandReward,Integer trophyPrice){}
  public record PlayerView(Long id,String nickname,Integer position,Integer matchCoins,Integer trophies,Integer handSize,Boolean ready,Boolean host){}
  public record CardView(Long handCardId,Long catalogCardId,Valor valor,Naipe naipe,SkillType skill){}
- public record PlayView(Long playerId,String nickname,CardView card,Integer order){}
+ public record PlayView(Long playerId,String nickname,CardView card,Integer order,Integer surpriseRoll,Integer surpriseCoinDelta,Integer buyCardsDrawn,TheftKind theftKind,Integer theftAmount,Boolean theftBlocked,Long theftTargetPlayerId,Boolean puzzleCorrect,Integer puzzleAmount){}
  /** Rodada encerrada; playerId e nickname ficam nulos quando houve empate. */
  public record RoundWinnerView(Integer roundNumber,Long playerId,String nickname){}
  public record PuzzleView(Long challengeId,String question,String[] alternatives){}

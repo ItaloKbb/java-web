@@ -74,10 +74,10 @@ public class GameEngineService {
         if(plays.existsByRoundAndPlayer(round,actor)) throw new IllegalStateException("O jogador já realizou sua jogada nesta rodada");
         MatchCardJpaEntity card=matchCards.findByIdAndGame(handCardId,game).orElseThrow(()->new NoSuchElementException("Carta não encontrada"));
         if(card.getOwner()==null||!card.getOwner().getId().equals(actor.getId())||card.getZone()!=CardZone.MAO) throw new ForbiddenException("A carta não pertence à mão do jogador");
-        card.move(CardZone.JOGADA,null); matchCards.save(card); int order=plays.findByRoundOrderByPlayOrder(round).size(); plays.save(new MatchPlayJpaEntity(round,actor,card,order));
+        card.move(CardZone.JOGADA,null); matchCards.save(card); int order=plays.findByRoundOrderByPlayOrder(round).size(); MatchPlayJpaEntity played=plays.save(new MatchPlayJpaEntity(round,actor,card,order));
         game.setResolvedTurns(game.getResolvedTurns()+1);
         refillIfEmpty(game,actor);
-        SkillType skill=skill(card.getCard()); boolean waiting=applySkill(game,round,actor,skill);
+        SkillType skill=skill(card.getCard()); boolean waiting=applySkill(game,round,actor,skill,card.getCard().getNaipe(),played);
         refillEmptyHands(game);
         if(!waiting) advance(game,actor);
         touch(game); return state(game,user);
@@ -89,7 +89,9 @@ public class GameEngineService {
         PuzzleChallengeJpaEntity challenge=challenges.findByIdAndGameAndAnsweredFalse(challengeId,game).orElseThrow(()->new NoSuchElementException("Desafio pendente não encontrado"));
         if(!challenge.getPlayer().getId().equals(actor.getId())) throw new ForbiddenException("Somente o jogador desafiado pode responder");
         if(alternativeIndex<0||alternativeIndex>=challenge.getPuzzle().getAlternativas().length) throw new IllegalArgumentException("Alternativa inválida");
-        if(challenge.getPuzzle().getAlternativaCorreta()==alternativeIndex) actor.addCoins(2); else draw(game,actor,2);
+        int power=puzzlePower(challenge.getSuit());boolean correct=challenge.getPuzzle().getAlternativaCorreta()==alternativeIndex;
+        int amount=correct?power:draw(game,actor,power); if(correct) actor.addCoins(power);
+        if(challenge.getPlay()!=null) challenge.getPlay().recordPuzzle(correct,amount);
         challenge.answer(); challenge.getRound().setStatus(RoundStatus.EM_ANDAMENTO); advance(game,actor); touch(game); return state(game,user);
     }
 
@@ -114,23 +116,55 @@ public class GameEngineService {
     @Transactional
     public GameStateResponse cancel(UserJpaEntity user,long gameId){MatchGameJpaEntity game=requireGame(gameId);requireHost(game,user);if(game.getPhase()==GamePhase.FINALIZADO)throw new IllegalStateException("A partida já foi finalizada");game.setPhase(GamePhase.CANCELADO);game.setCurrentPosition(null);touch(game);return state(game,user);}
 
-    private boolean applySkill(MatchGameJpaEntity game,MatchRoundJpaEntity round,MatchPlayerJpaEntity actor,SkillType type){
+    private boolean applySkill(MatchGameJpaEntity game,MatchRoundJpaEntity round,MatchPlayerJpaEntity actor,SkillType type,Naipe suit,MatchPlayJpaEntity played){
         if(type==null)return false;
         if(type==SkillType.INVERTS){game.setDirection(game.getDirection()==Direction.HORARIO?Direction.ANTI_HORARIO:Direction.HORARIO);return false;}
         MatchPlayerJpaEntity target=nextPlayer(game,actor.getPosition());
         switch(type){
             case BLOCK -> {if(!blocked(target))target.addSkipTurn();}
-            case THEFT -> {if(!blocked(target)){List<MatchCardJpaEntity> hand=hand(game,target);if(!hand.isEmpty())hand.get(random.nextInt(hand.size())).move(CardZone.MAO,actor);}}
-            case BUY -> {if(!blocked(target))draw(game,target,2);}
+            case THEFT -> applyTheft(game,actor,target,suit,played);
+            case BUY -> played.recordBuyCardsDrawn(blocked(target)?0:draw(game,target,buyPower(suit)));
             case BURN -> {List<MatchCardJpaEntity> hand=hand(game,actor);if(!hand.isEmpty())hand.get(random.nextInt(hand.size())).move(CardZone.DESCARTE,null);}
-            case SURPRISE -> actor.addCoins(1);
-            case PUZZLE -> {List<PuzzleJpaEntity> all=puzzles.findByArchivedAtIsNull();if(all.isEmpty())throw new IllegalStateException("Nenhum puzzle cadastrado");challenges.save(new PuzzleChallengeJpaEntity(game,round,actor,all.get(random.nextInt(all.size()))));round.setStatus(RoundStatus.AGUARDANDO_PUZZLE);return true;}
+            case SURPRISE -> {
+                int roll=surprisePower(suit)*(random.nextBoolean()?1:-1);
+                int coinDelta=surpriseCoinDelta(actor.getMatchCoins(),roll);
+                actor.addCoins(coinDelta);
+                played.recordSurprise(roll,coinDelta);
+            }
+            case PUZZLE -> {List<PuzzleJpaEntity> all=puzzles.findByArchivedAtIsNull();if(all.isEmpty())throw new IllegalStateException("Nenhum puzzle cadastrado");challenges.save(new PuzzleChallengeJpaEntity(game,round,actor,all.get(random.nextInt(all.size())),played,suit));round.setStatus(RoundStatus.AGUARDANDO_PUZZLE);return true;}
             case CHANGEOFHANDS -> {if(!blocked(target)){List<MatchCardJpaEntity> own=hand(game,actor), other=hand(game,target);own.forEach(c->c.move(CardZone.MAO,target));other.forEach(c->c.move(CardZone.MAO,actor));}}
             case BOMB -> {for(MatchPlayerJpaEntity opponent:playerList(game))if(!opponent.getId().equals(actor.getId())&&!blocked(opponent))draw(game,opponent,1);}
             case SHIELD -> actor.addShield();
             default -> { }
         }
         return false;
+    }
+
+    static int surprisePower(Naipe suit){return switch(suit){case OUROS->1;case ESPADAS->2;case COPAS->3;case PAUS->4;};}
+    static int surpriseCoinDelta(int currentCoins,int roll){return Math.max(-Math.max(0,currentCoins),roll);}
+    static int buyPower(Naipe suit){return switch(suit){case OUROS,ESPADAS->2;case COPAS->3;case PAUS->4;};}
+    static int puzzlePower(Naipe suit){return surprisePower(suit);}
+    static int theftPower(Naipe suit){return switch(suit){case OUROS,ESPADAS->2;case COPAS,PAUS->3;};}
+    static int theftAmount(int available,int power){return Math.min(power,Math.max(0,available));}
+
+    private void applyTheft(MatchGameJpaEntity game,MatchPlayerJpaEntity actor,MatchPlayerJpaEntity target,Naipe suit,MatchPlayJpaEntity played){
+        TheftKind kind=random.nextBoolean()?TheftKind.CARD:TheftKind.COIN;
+        boolean shielded=blocked(target);
+        int amount=0;
+        if(!shielded){
+            int power=theftPower(suit);
+            if(kind==TheftKind.CARD){
+                List<MatchCardJpaEntity> targetHand=hand(game,target);
+                amount=theftAmount(targetHand.size(),power);
+                Collections.shuffle(targetHand,random);
+                for(int i=0;i<amount;i++)targetHand.get(i).move(CardZone.MAO,actor);
+            }else{
+                amount=theftAmount(target.getMatchCoins(),power);
+                target.spendCoins(amount);
+                actor.addCoins(amount);
+            }
+        }
+        played.recordTheft(kind,amount,shielded,target.getId());
     }
 
     private boolean blocked(MatchPlayerJpaEntity target){if(target.getShields()>0){target.consumeShield();return true;}return false;}
@@ -166,7 +200,7 @@ public class GameEngineService {
 
     private void refillEmptyHands(MatchGameJpaEntity game){for(MatchPlayerJpaEntity p:playerList(game))refillIfEmpty(game,p);}
     private void refillIfEmpty(MatchGameJpaEntity game,MatchPlayerJpaEntity player){if(hand(game,player).isEmpty()){player.addCoins(game.getEmptyHandReward());draw(game,player,game.getInitialCards());}}
-    private void draw(MatchGameJpaEntity game,MatchPlayerJpaEntity player,int amount){for(int i=0;i<amount;i++){MatchCardJpaEntity card=drawOne(game);if(card==null)return;card.move(CardZone.MAO,player);}}
+    private int draw(MatchGameJpaEntity game,MatchPlayerJpaEntity player,int amount){int drawn=0;for(int i=0;i<amount;i++){MatchCardJpaEntity card=drawOne(game);if(card==null)break;card.move(CardZone.MAO,player);drawn++;}return drawn;}
     private MatchCardJpaEntity drawOne(MatchGameJpaEntity game){
         List<MatchCardJpaEntity> deck=matchCards.findByGameAndZoneOrderByDrawOrder(game,CardZone.MONTE);if(deck.isEmpty()){
             List<MatchCardJpaEntity> discard=matchCards.findByGameAndZoneOrderByDrawOrder(game,CardZone.DESCARTE);Collections.shuffle(discard,random);for(int i=0;i<discard.size();i++){discard.get(i).move(CardZone.MONTE,null);discard.get(i).setDrawOrder(i);}matchCards.saveAll(discard);deck=discard;
@@ -189,7 +223,7 @@ public class GameEngineService {
 
     private GameStateResponse state(MatchGameJpaEntity game,UserJpaEntity viewer){
         MatchPlayerJpaEntity self=requireMember(game,viewer);List<MatchPlayerJpaEntity> ps=playerList(game);MatchRoundJpaEntity round=rounds.findFirstByGameOrderByNumberDesc(game).orElse(null);
-        GameStateResponse.CardView vira=round==null?null:cardView(round.getVira(),false);List<GameStateResponse.PlayView> open=round==null?List.of():plays.findByRoundOrderByPlayOrder(round).stream().map(p->new GameStateResponse.PlayView(p.getPlayer().getId(),p.getPlayer().getUser().getNickname(),cardView(p.getCard(),false),p.getPlayOrder())).toList();
+        GameStateResponse.CardView vira=round==null?null:cardView(round.getVira(),false);List<GameStateResponse.PlayView> open=round==null?List.of():plays.findByRoundOrderByPlayOrder(round).stream().map(p->new GameStateResponse.PlayView(p.getPlayer().getId(),p.getPlayer().getUser().getNickname(),cardView(p.getCard(),false),p.getPlayOrder(),p.getSurpriseRoll(),p.getSurpriseCoinDelta(),p.getBuyCardsDrawn(),p.getTheftKind(),p.getTheftAmount(),p.getTheftBlocked(),p.getTheftTargetPlayerId(),p.getPuzzleCorrect(),p.getPuzzleAmount())).toList();
         List<GameStateResponse.PlayerView> views=ps.stream().map(p->new GameStateResponse.PlayerView(p.getId(),p.getUser().getNickname(),p.getPosition(),p.getMatchCoins(),p.getTrophies(),hand(game,p).size(),p.getReady(),p.getUser().getId().equals(game.getHost().getId()))).toList();
         List<GameStateResponse.CardView> own=hand(game,self).stream().map(c->cardView(c,true)).toList();
         GameStateResponse.PuzzleView puzzle=challenges.findFirstByGameAndAnsweredFalse(game).map(c->new GameStateResponse.PuzzleView(c.getId(),c.getPuzzle().getQuestion(),c.getPuzzle().getAlternativas())).orElse(null);

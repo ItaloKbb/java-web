@@ -22,16 +22,48 @@ public class CatalogSeedConfig {
                 cards.findByValorAndNaipe(valor, naipe).orElseGet(() -> cards.save(new CardEntity(null, valor, naipe, null)));
             if (skills.count() == 0) {
             seedSkill(skills,"Bloqueio","O próximo jogador perde o turno",SkillType.BLOCK,Naipe.PAUS,Valor.QUATRO);
-            seedSkill(skills,"Roubo","Rouba uma carta do próximo jogador",SkillType.THEFT,Naipe.COPAS,Valor.CINCO);
             seedSkill(skills,"Inversão","Inverte o sentido da rodada",SkillType.INVERTS,Naipe.ESPADAS,Valor.SEIS);
-            seedSkill(skills,"Compra","O próximo jogador compra duas cartas",SkillType.BUY,Naipe.OUROS,Valor.SETE);
             seedSkill(skills,"Queima","Descarta outra carta aleatória da própria mão",SkillType.BURN,Naipe.PAUS,Valor.DAMA);
-            seedSkill(skills,"Surpresa","Recebe uma moeda",SkillType.SURPRISE,Naipe.COPAS,Valor.VALETE);
-            seedSkill(skills,"Puzzle","Acerto recebe duas moedas; erro compra duas cartas",SkillType.PUZZLE,Naipe.ESPADAS,Valor.REI);
             seedSkill(skills,"Troca de mãos","Troca a mão com o próximo jogador",SkillType.CHANGEOFHANDS,Naipe.OUROS,Valor.AS);
             seedSkill(skills,"Bomba","Todos os adversários compram uma carta",SkillType.BOMB,Naipe.PAUS,Valor.DOIS);
             seedSkill(skills,"Escudo","Bloqueia o próximo efeito negativo",SkillType.SHIELD,Naipe.COPAS,Valor.TRES);
             }
+            String surpriseDescription="Ganha ou perde de 1 a 4 moedas conforme o naipe";
+            for (Naipe naipe : Naipe.values())
+                seedSkill(skills,"Surpresa",surpriseDescription,SkillType.SURPRISE,naipe,Valor.VALETE);
+            String buyDescription="O próximo jogador compra 2, 3 ou 4 cartas conforme o naipe";
+            for (Naipe naipe : Naipe.values())
+                seedSkill(skills,"Compra",buyDescription,SkillType.BUY,naipe,Valor.SETE);
+            String puzzleDescription="Acerto ganha e erro compra de 1 a 4 conforme o naipe";
+            for (Naipe naipe : Naipe.values())
+                seedSkill(skills,"Puzzle",puzzleDescription,SkillType.PUZZLE,naipe,Valor.REI);
+            skills.findByValorAndNaipe(Valor.REI,Naipe.ESPADAS).ifPresent(skill -> {
+                if (skill.getType()==SkillType.PUZZLE && "Acerto recebe duas moedas; erro compra duas cartas".equals(skill.getDescription())) {
+                    skill.update(skill.getName(),puzzleDescription,skill.getType(),skill.getNaipe(),skill.getValor());
+                    skills.save(skill);
+                }
+            });
+            String theftDescription="Rouba cartas ou moedas do próximo jogador conforme o naipe";
+            for (Naipe naipe : Naipe.values())
+                seedSkill(skills,"Roubo",theftDescription,SkillType.THEFT,naipe,Valor.CINCO);
+            skills.findByValorAndNaipe(Valor.CINCO,Naipe.COPAS).ifPresent(skill -> {
+                if (skill.getType()==SkillType.THEFT && "Rouba uma carta do próximo jogador".equals(skill.getDescription())) {
+                    skill.update(skill.getName(),theftDescription,skill.getType(),skill.getNaipe(),skill.getValor());
+                    skills.save(skill);
+                }
+            });
+            skills.findByValorAndNaipe(Valor.SETE,Naipe.OUROS).ifPresent(skill -> {
+                if (skill.getType()==SkillType.BUY && "O próximo jogador compra duas cartas".equals(skill.getDescription())) {
+                    skill.update(skill.getName(),buyDescription,skill.getType(),skill.getNaipe(),skill.getValor());
+                    skills.save(skill);
+                }
+            });
+            skills.findByValorAndNaipe(Valor.VALETE,Naipe.COPAS).ifPresent(skill -> {
+                if (skill.getType()==SkillType.SURPRISE && "Recebe uma moeda".equals(skill.getDescription())) {
+                    skill.update(skill.getName(),surpriseDescription,skill.getType(),skill.getNaipe(),skill.getValor());
+                    skills.save(skill);
+                }
+            });
             if (puzzles.count() == 0) {
                 puzzles.save(new PuzzleJpaEntity("Quanto é 7 x 8?", new String[]{"54","56","64","48"}, 1));
                 puzzles.save(new PuzzleJpaEntity("Qual estrutura repete um bloco enquanto uma condição for verdadeira?", new String[]{"if","while","class","import"}, 1));
