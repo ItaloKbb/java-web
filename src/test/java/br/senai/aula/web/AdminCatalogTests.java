@@ -1,7 +1,5 @@
 package br.senai.aula.web;
 
-import br.senai.aula.web.config.CatalogSeedConfig;
-import br.senai.aula.web.infrastructure.persistence.puzzle.repository.PuzzleJpaRepository;
 import br.senai.aula.web.infrastructure.persistence.skills.repository.SkillsJpaRepository;
 import br.senai.aula.web.infrastructure.web.ApiExceptionHandler;
 import br.senai.aula.web.infrastructure.web.admin.AdminController;
@@ -32,9 +30,9 @@ class AdminCatalogTests {
     @Autowired SkillController skills;
     @Autowired PuzzleController puzzles;
     @Autowired SkillsJpaRepository skillRepository;
-    @Autowired PuzzleJpaRepository puzzleRepository;
+    @Autowired br.senai.aula.web.infrastructure.persistence.puzzle.repository.PuzzleJpaRepository puzzleRepository;
     @Autowired ApplicationRunner catalogSeed;
-    @Autowired ObjectMapper json;
+    private final ObjectMapper json = new ObjectMapper();
 
     private MockMvc mvc() {
         return standaloneSetup(admin, cards, skills, puzzles)
