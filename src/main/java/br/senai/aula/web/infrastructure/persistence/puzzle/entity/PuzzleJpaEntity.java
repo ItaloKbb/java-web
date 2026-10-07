@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
 
 @Entity
 @Table(name = "puzzle")
@@ -23,6 +24,8 @@ public class PuzzleJpaEntity {
 
     @Column(nullable = false)
     private Integer alternativaCorreta;
+
+    private Instant archivedAt;
 
     protected PuzzleJpaEntity() {
     }
@@ -53,4 +56,11 @@ public class PuzzleJpaEntity {
     public Integer getAlternativaCorreta() {
         return alternativaCorreta;
     }
+    public Instant getArchivedAt() { return archivedAt; }
+    public void update(String question, String[] alternativas, Integer alternativaCorreta) {
+        this.question = question;
+        this.alternativas = alternativas;
+        this.alternativaCorreta = alternativaCorreta;
+    }
+    public void archive() { archivedAt = Instant.now(); }
 }

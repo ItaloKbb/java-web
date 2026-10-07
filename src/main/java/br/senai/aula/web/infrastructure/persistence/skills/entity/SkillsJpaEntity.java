@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
 
 @Entity
 @Table(name = "skills")
@@ -36,6 +37,8 @@ public class SkillsJpaEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Valor valor;
+
+    private Instant archivedAt;
 
     protected SkillsJpaEntity() {
     }
@@ -70,4 +73,13 @@ public class SkillsJpaEntity {
     }
 
     public Valor getValor() { return valor;}
+    public Instant getArchivedAt() { return archivedAt; }
+    public void update(String name, String description, SkillType type, Naipe naipe, Valor valor) {
+        this.name = name;
+        this.description = description;
+        this.type = type;
+        this.naipe = naipe;
+        this.valor = valor;
+    }
+    public void archive() { archivedAt = Instant.now(); }
     }

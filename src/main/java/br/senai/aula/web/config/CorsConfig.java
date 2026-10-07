@@ -7,5 +7,5 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class CorsConfig implements WebMvcConfigurer {
     private final String[] origins;
     public CorsConfig(@Value("${app.cors.allowed-origins:http://localhost:4200,https://verbose-broccoli-p5wx9jvjpqq3674g-3000.app.github.dev,https://*.app.github.dev,https://italokbb.github.io}") String origins){this.origins=origins.split(",");}
-    @Override public void addCorsMappings(CorsRegistry registry){registry.addMapping("/**").allowedOriginPatterns(origins).allowedMethods("GET","POST","PUT","OPTIONS").allowedHeaders("*");}
+    @Override public void addCorsMappings(CorsRegistry registry){registry.addMapping("/**").allowedOriginPatterns(origins).allowedMethods("GET","POST","PUT","DELETE","OPTIONS").allowedHeaders("*");}
 }

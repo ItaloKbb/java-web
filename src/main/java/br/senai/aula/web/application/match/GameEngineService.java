@@ -124,7 +124,7 @@ public class GameEngineService {
             case BUY -> {if(!blocked(target))draw(game,target,2);}
             case BURN -> {List<MatchCardJpaEntity> hand=hand(game,actor);if(!hand.isEmpty())hand.get(random.nextInt(hand.size())).move(CardZone.DESCARTE,null);}
             case SURPRISE -> actor.addCoins(1);
-            case PUZZLE -> {List<PuzzleJpaEntity> all=puzzles.findAll();if(all.isEmpty())throw new IllegalStateException("Nenhum puzzle cadastrado");challenges.save(new PuzzleChallengeJpaEntity(game,round,actor,all.get(random.nextInt(all.size()))));round.setStatus(RoundStatus.AGUARDANDO_PUZZLE);return true;}
+            case PUZZLE -> {List<PuzzleJpaEntity> all=puzzles.findByArchivedAtIsNull();if(all.isEmpty())throw new IllegalStateException("Nenhum puzzle cadastrado");challenges.save(new PuzzleChallengeJpaEntity(game,round,actor,all.get(random.nextInt(all.size()))));round.setStatus(RoundStatus.AGUARDANDO_PUZZLE);return true;}
             case CHANGEOFHANDS -> {if(!blocked(target)){List<MatchCardJpaEntity> own=hand(game,actor), other=hand(game,target);own.forEach(c->c.move(CardZone.MAO,target));other.forEach(c->c.move(CardZone.MAO,actor));}}
             case BOMB -> {for(MatchPlayerJpaEntity opponent:playerList(game))if(!opponent.getId().equals(actor.getId())&&!blocked(opponent))draw(game,opponent,1);}
             case SHIELD -> actor.addShield();
@@ -178,7 +178,7 @@ public class GameEngineService {
     private List<MatchPlayerJpaEntity> playerList(MatchGameJpaEntity game){return players.findByGameOrderByPosition(game);}
     private List<MatchCardJpaEntity> hand(MatchGameJpaEntity game,MatchPlayerJpaEntity player){return matchCards.findByGameAndOwnerAndZone(game,player,CardZone.MAO);}
     private MatchRoundJpaEntity currentRound(MatchGameJpaEntity game){return rounds.findFirstByGameOrderByNumberDesc(game).orElseThrow(()->new IllegalStateException("A partida ainda não possui rodada"));}
-    private SkillType skill(CardEntity card){return skills.findByValorAndNaipe(card.getValor(),card.getNaipe()).map(s->s.getType()).orElse(null);}
+    private SkillType skill(CardEntity card){return skills.findByValorAndNaipeAndArchivedAtIsNull(card.getValor(),card.getNaipe()).map(s->s.getType()).orElse(null);}
     private MatchGameJpaEntity requireGame(long id){return games.findById(id).orElseThrow(()->new NoSuchElementException("Jogo não encontrado"));}
     private MatchPlayerJpaEntity requireMember(MatchGameJpaEntity game,UserJpaEntity user){return players.findByGameAndUser(game,user).orElseThrow(()->new ForbiddenException("O usuário não participa deste jogo"));}
     private void requireHost(MatchGameJpaEntity game,UserJpaEntity user){if(!game.getHost().getId().equals(user.getId()))throw new ForbiddenException("Somente o host pode executar esta ação");}
@@ -194,7 +194,8 @@ public class GameEngineService {
         List<GameStateResponse.CardView> own=hand(game,self).stream().map(c->cardView(c,true)).toList();
         GameStateResponse.PuzzleView puzzle=challenges.findFirstByGameAndAnsweredFalse(game).map(c->new GameStateResponse.PuzzleView(c.getId(),c.getPuzzle().getQuestion(),c.getPuzzle().getAlternativas())).orElse(null);
         Long winnerId=game.getWinner()==null?null:ps.stream().filter(p->p.getUser().getId().equals(game.getWinner().getId())).map(MatchPlayerJpaEntity::getId).findFirst().orElse(null);
-        return new GameStateResponse(game.getId(),game.getAccessCode(),game.getName(),game.getPhase(),game.getStateVersion(),new GameStateResponse.Settings(game.getMaxPlayers(),game.getInitialCards(),game.getRoundReward(),game.getEmptyHandReward(),game.getTrophyPrice()),game.getDirection(),game.getRoundNumber(),round==null?null:round.getStatus(),vira,game.getCurrentPosition()==null?null:ps.stream().filter(p->p.getPosition().equals(game.getCurrentPosition())).map(MatchPlayerJpaEntity::getId).findFirst().orElse(null),views,open,own,puzzle,winnerId);
+        List<GameStateResponse.RoundWinnerView> roundWinners=rounds.findByGameAndStatusOrderByNumberAsc(game,RoundStatus.FINALIZADO).stream().map(r->r.getWinner()==null?new GameStateResponse.RoundWinnerView(r.getNumber(),null,null):new GameStateResponse.RoundWinnerView(r.getNumber(),r.getWinner().getId(),r.getWinner().getUser().getNickname())).toList();
+        return new GameStateResponse(game.getId(),game.getAccessCode(),game.getName(),game.getPhase(),game.getStateVersion(),new GameStateResponse.Settings(game.getMaxPlayers(),game.getInitialCards(),game.getRoundReward(),game.getEmptyHandReward(),game.getTrophyPrice()),game.getDirection(),game.getRoundNumber(),round==null?null:round.getStatus(),vira,game.getCurrentPosition()==null?null:ps.stream().filter(p->p.getPosition().equals(game.getCurrentPosition())).map(MatchPlayerJpaEntity::getId).findFirst().orElse(null),views,open,own,puzzle,winnerId,roundWinners);
     }
     private GameStateResponse.CardView cardView(MatchCardJpaEntity card,boolean exposeId){return new GameStateResponse.CardView(exposeId?card.getId():null,card.getCard().getId(),card.getCard().getValor(),card.getCard().getNaipe(),skill(card.getCard()));}
 }

@@ -5,7 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import br.senai.aula.web.domain.cards.Naipe;
 import br.senai.aula.web.domain.cards.Valor;
 import java.util.Optional;
+import java.util.List;
 
 public interface SkillsJpaRepository extends JpaRepository<SkillsJpaEntity, Long> {
     Optional<SkillsJpaEntity> findByValorAndNaipe(Valor valor, Naipe naipe);
+    Optional<SkillsJpaEntity> findByValorAndNaipeAndArchivedAtIsNull(Valor valor, Naipe naipe);
+    List<SkillsJpaEntity> findByArchivedAtIsNull();
 }

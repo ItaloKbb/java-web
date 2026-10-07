@@ -20,6 +20,7 @@ public class CatalogSeedConfig {
         return args -> {
             for (Valor valor : Valor.values()) for (Naipe naipe : Naipe.values())
                 cards.findByValorAndNaipe(valor, naipe).orElseGet(() -> cards.save(new CardEntity(null, valor, naipe, null)));
+            if (skills.count() == 0) {
             seedSkill(skills,"Bloqueio","O próximo jogador perde o turno",SkillType.BLOCK,Naipe.PAUS,Valor.QUATRO);
             seedSkill(skills,"Roubo","Rouba uma carta do próximo jogador",SkillType.THEFT,Naipe.COPAS,Valor.CINCO);
             seedSkill(skills,"Inversão","Inverte o sentido da rodada",SkillType.INVERTS,Naipe.ESPADAS,Valor.SEIS);
@@ -30,6 +31,7 @@ public class CatalogSeedConfig {
             seedSkill(skills,"Troca de mãos","Troca a mão com o próximo jogador",SkillType.CHANGEOFHANDS,Naipe.OUROS,Valor.AS);
             seedSkill(skills,"Bomba","Todos os adversários compram uma carta",SkillType.BOMB,Naipe.PAUS,Valor.DOIS);
             seedSkill(skills,"Escudo","Bloqueia o próximo efeito negativo",SkillType.SHIELD,Naipe.COPAS,Valor.TRES);
+            }
             if (puzzles.count() == 0) {
                 puzzles.save(new PuzzleJpaEntity("Quanto é 7 x 8?", new String[]{"54","56","64","48"}, 1));
                 puzzles.save(new PuzzleJpaEntity("Qual estrutura repete um bloco enquanto uma condição for verdadeira?", new String[]{"if","while","class","import"}, 1));

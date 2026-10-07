@@ -4,4 +4,5 @@ import br.senai.aula.web.infrastructure.persistence.puzzle.entity.PuzzleJpaEntit
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PuzzleJpaRepository extends JpaRepository<PuzzleJpaEntity, Long> {
+    java.util.List<PuzzleJpaEntity> findByArchivedAtIsNull();
 }

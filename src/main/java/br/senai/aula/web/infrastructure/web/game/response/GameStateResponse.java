@@ -10,10 +10,12 @@ import java.util.List;
 
 public record GameStateResponse(Long id,String code,String name,GamePhase phase,Long stateVersion,Settings settings,
  Direction direction,Integer roundNumber,RoundStatus roundStatus,CardView vira,Long currentPlayerId,List<PlayerView> players,
- List<PlayView> plays,List<CardView> hand,PuzzleView pendingPuzzle,Long winnerPlayerId) {
+ List<PlayView> plays,List<CardView> hand,PuzzleView pendingPuzzle,Long winnerPlayerId,List<RoundWinnerView> roundWinners) {
  public record Settings(Integer maxPlayers,Integer initialCards,Integer roundReward,Integer emptyHandReward,Integer trophyPrice){}
  public record PlayerView(Long id,String nickname,Integer position,Integer matchCoins,Integer trophies,Integer handSize,Boolean ready,Boolean host){}
  public record CardView(Long handCardId,Long catalogCardId,Valor valor,Naipe naipe,SkillType skill){}
  public record PlayView(Long playerId,String nickname,CardView card,Integer order){}
+ /** Rodada encerrada; playerId e nickname ficam nulos quando houve empate. */
+ public record RoundWinnerView(Integer roundNumber,Long playerId,String nickname){}
  public record PuzzleView(Long challengeId,String question,String[] alternatives){}
 }
