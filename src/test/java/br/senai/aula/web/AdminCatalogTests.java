@@ -3,11 +3,15 @@ package br.senai.aula.web;
 import br.senai.aula.web.infrastructure.persistence.skills.repository.SkillsJpaRepository;
 import br.senai.aula.web.infrastructure.web.ApiExceptionHandler;
 import br.senai.aula.web.infrastructure.web.admin.AdminController;
+import br.senai.aula.web.infrastructure.web.admin.AdminCatalogService;
 import br.senai.aula.web.infrastructure.web.card.CardController;
 import br.senai.aula.web.infrastructure.web.puzzle.controller.PuzzleController;
 import br.senai.aula.web.infrastructure.web.skill.controller.SkillController;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import br.senai.aula.web.infrastructure.persistence.card.entity.repository.CardJpaRepository;
+import br.senai.aula.web.infrastructure.persistence.match.repository.PuzzleChallengeJpaRepository;
+import br.senai.aula.web.infrastructure.persistence.puzzle.entity.PuzzleJpaEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -93,5 +98,21 @@ class AdminCatalogTests {
         assertNotNull(puzzleRepository.findById(puzzleId).orElseThrow().getArchivedAt());
         mvc.perform(delete("/admin/session").header("X-Admin-Token", token)).andExpect(status().isNoContent());
         mvc.perform(get("/admin/session").header("X-Admin-Token", token)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void pendingChallengeBlocksPuzzleEdit() {
+        CardJpaRepository cards = mock(CardJpaRepository.class);
+        SkillsJpaRepository skills = mock(SkillsJpaRepository.class);
+        var puzzles = mock(br.senai.aula.web.infrastructure.persistence.puzzle.repository.PuzzleJpaRepository.class);
+        PuzzleChallengeJpaRepository challenges = mock(PuzzleChallengeJpaRepository.class);
+        PuzzleJpaEntity puzzle = new PuzzleJpaEntity("Pergunta original?", new String[]{"A", "B"}, 0);
+        when(puzzles.findById(42L)).thenReturn(java.util.Optional.of(puzzle));
+        when(challenges.existsByPuzzleAndAnsweredFalse(puzzle)).thenReturn(true);
+        AdminCatalogService service = new AdminCatalogService(cards, skills, puzzles, challenges);
+
+        assertThrows(IllegalStateException.class, () -> service.updatePuzzle(42,
+                new AdminCatalogService.PuzzleInput("Pergunta alterada?", new String[]{"C", "D"}, 1)));
+        assertEquals("Pergunta original?", puzzle.getQuestion());
     }
 }

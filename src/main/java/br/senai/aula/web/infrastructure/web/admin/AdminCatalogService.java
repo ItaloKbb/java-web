@@ -104,7 +104,7 @@ public class AdminCatalogService {
                 || input.naipe() == null || input.valor() == null) {
             throw new IllegalArgumentException("Informe nome, descrição, tipo e carta válidos");
         }
-        if (cards.findByValorAndNaipe(input.valor(), input.naipe()).isEmpty()) {
+        if (cards.lockByValorAndNaipe(input.valor(), input.naipe()).isEmpty()) {
             throw new IllegalArgumentException("A carta escolhida não existe");
         }
         skills.findByValorAndNaipeAndArchivedAtIsNull(input.valor(), input.naipe()).ifPresent(existing -> {
