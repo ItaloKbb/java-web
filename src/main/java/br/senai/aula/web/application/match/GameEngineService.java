@@ -131,7 +131,13 @@ public class GameEngineService {
                 actor.addCoins(coinDelta);
                 played.recordSurprise(roll,coinDelta);
             }
-            case PUZZLE -> {List<PuzzleJpaEntity> all=puzzles.findByArchivedAtIsNull();if(all.isEmpty())throw new IllegalStateException("Nenhum puzzle cadastrado");challenges.save(new PuzzleChallengeJpaEntity(game,round,actor,all.get(random.nextInt(all.size())),played,suit));round.setStatus(RoundStatus.AGUARDANDO_PUZZLE);return true;}
+            case PUZZLE -> {
+                List<PuzzleJpaEntity> active=puzzles.findByArchivedAtIsNull();
+                PuzzleJpaEntity puzzle=selectPuzzle(active,challenges.findPuzzleIdsByGame(game),random);
+                challenges.save(new PuzzleChallengeJpaEntity(game,round,actor,puzzle,played,suit));
+                round.setStatus(RoundStatus.AGUARDANDO_PUZZLE);
+                return true;
+            }
             case CHANGEOFHANDS -> {if(!blocked(target)){List<MatchCardJpaEntity> own=hand(game,actor), other=hand(game,target);own.forEach(c->c.move(CardZone.MAO,target));other.forEach(c->c.move(CardZone.MAO,actor));}}
             case BOMB -> {for(MatchPlayerJpaEntity opponent:playerList(game))if(!opponent.getId().equals(actor.getId())&&!blocked(opponent))draw(game,opponent,1);}
             case SHIELD -> actor.addShield();
@@ -144,6 +150,19 @@ public class GameEngineService {
     static int surpriseCoinDelta(int currentCoins,int roll){return Math.max(-Math.max(0,currentCoins),roll);}
     static int buyPower(Naipe suit){return switch(suit){case OUROS,ESPADAS->2;case COPAS->3;case PAUS->4;};}
     static int puzzlePower(Naipe suit){return surprisePower(suit);}
+    static PuzzleJpaEntity selectPuzzle(List<PuzzleJpaEntity> active,List<Long> history,Random random){
+        if(active.isEmpty())throw new IllegalStateException("Nenhum puzzle cadastrado");
+        Set<Long> activeIds=new HashSet<>();
+        active.forEach(puzzle->activeIds.add(puzzle.getId()));
+        Set<Long> usedThisCycle=new HashSet<>();
+        for(Long puzzleId:history){
+            if(!activeIds.contains(puzzleId))continue;
+            usedThisCycle.add(puzzleId);
+            if(usedThisCycle.size()==activeIds.size())usedThisCycle.clear();
+        }
+        List<PuzzleJpaEntity> unseen=active.stream().filter(puzzle->!usedThisCycle.contains(puzzle.getId())).toList();
+        return unseen.get(random.nextInt(unseen.size()));
+    }
     static int theftPower(Naipe suit){return switch(suit){case OUROS,ESPADAS->2;case COPAS,PAUS->3;};}
     static int theftAmount(int available,int power){return Math.min(power,Math.max(0,available));}
 
