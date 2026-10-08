@@ -39,6 +39,7 @@ public class MatchGameJpaEntity {
         this.roundReward=roundReward; this.emptyHandReward=emptyHandReward; this.trophyPrice=trophyPrice; this.host=host;
     }
     public void touch() { updatedAt=Instant.now(); }
+    public Instant getUpdatedAt(){return updatedAt;}
     public Long getId(){return id;} public Long getStateVersion(){return stateVersion==null?0:stateVersion;}
     public String getAccessCode(){return accessCode;} public String getName(){return name;} public Integer getMaxPlayers(){return maxPlayers;}
     public Integer getInitialCards(){return initialCards;} public Integer getRoundReward(){return roundReward;}
