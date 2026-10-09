@@ -15,6 +15,7 @@ import br.senai.aula.web.infrastructure.persistence.skills.repository.SkillsJpaR
 import br.senai.aula.web.infrastructure.persistence.user.entity.UserJpaEntity;
 import br.senai.aula.web.infrastructure.web.game.response.GameStateResponse;
 import jakarta.persistence.OptimisticLockException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,16 +30,17 @@ public class GameEngineService {
     private final MatchGameJpaRepository games; private final MatchPlayerJpaRepository players; private final MatchCardJpaRepository matchCards;
     private final MatchRoundJpaRepository rounds; private final MatchPlayJpaRepository plays; private final PuzzleChallengeJpaRepository challenges;
     private final CardJpaRepository catalog; private final SkillsJpaRepository skills; private final PuzzleJpaRepository puzzles;
+    private final ApplicationEventPublisher events;
     private final SecureRandom random=new SecureRandom();
     public GameEngineService(MatchGameJpaRepository games,MatchPlayerJpaRepository players,MatchCardJpaRepository matchCards,
       MatchRoundJpaRepository rounds,MatchPlayJpaRepository plays,PuzzleChallengeJpaRepository challenges,CardJpaRepository catalog,
-      SkillsJpaRepository skills,PuzzleJpaRepository puzzles){this.games=games;this.players=players;this.matchCards=matchCards;this.rounds=rounds;this.plays=plays;this.challenges=challenges;this.catalog=catalog;this.skills=skills;this.puzzles=puzzles;}
+      SkillsJpaRepository skills,PuzzleJpaRepository puzzles,ApplicationEventPublisher events){this.games=games;this.players=players;this.matchCards=matchCards;this.rounds=rounds;this.plays=plays;this.challenges=challenges;this.catalog=catalog;this.skills=skills;this.puzzles=puzzles;this.events=events;}
 
     @Transactional
     public GameStateResponse create(UserJpaEntity user,String name,int maxPlayers,int initialCards,int roundReward,int emptyReward,int trophyPrice){
         validateSettings(maxPlayers,initialCards,roundReward,emptyReward,trophyPrice);
         MatchGameJpaEntity game=games.save(new MatchGameJpaEntity(uniqueCode(),name.trim(),maxPlayers,initialCards,roundReward,emptyReward,trophyPrice,user));
-        players.save(new MatchPlayerJpaEntity(game,user,0)); game.touch(); games.saveAndFlush(game); return state(game,user);
+        players.save(new MatchPlayerJpaEntity(game,user,0)); touch(game); return state(game,user);
     }
 
     @Transactional
@@ -236,7 +238,7 @@ public class GameEngineService {
     private MatchPlayerJpaEntity requireMember(MatchGameJpaEntity game,UserJpaEntity user){return players.findByGameAndUser(game,user).orElseThrow(()->new ForbiddenException("O usuário não participa deste jogo"));}
     private void requireHost(MatchGameJpaEntity game,UserJpaEntity user){if(!game.getHost().getId().equals(user.getId()))throw new ForbiddenException("Somente o host pode executar esta ação");}
     private void requirePhase(MatchGameJpaEntity game,GamePhase expected){if(game.getPhase()!=expected)throw new IllegalStateException("Ação indisponível na fase "+game.getPhase());}
-    private void touch(MatchGameJpaEntity game){game.touch();games.saveAndFlush(game);}
+    private void touch(MatchGameJpaEntity game){game.touch();games.saveAndFlush(game);events.publishEvent(new GameStateChangedEvent(game.getId()));}
     private void validateSettings(int max,int initial,int reward,int empty,int trophy){if(max<2||max>6)throw new IllegalArgumentException("maxPlayers deve estar entre 2 e 6");if(initial<1||initial>10)throw new IllegalArgumentException("initialCards deve estar entre 1 e 10");if(reward<0||empty<0||trophy<1)throw new IllegalArgumentException("Recompensas não podem ser negativas e o troféu deve custar ao menos 1");}
     private String uniqueCode(){String code;do{StringBuilder b=new StringBuilder();for(int i=0;i<6;i++)b.append(CODE_CHARS.charAt(random.nextInt(CODE_CHARS.length())));code=b.toString();}while(games.existsByAccessCode(code));return code;}
 

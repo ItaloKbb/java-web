@@ -71,6 +71,34 @@ Para jogar uma carta, use o `handCardId` recebido somente na mão do jogador aut
 
 O campo `stateVersion` muda depois de cada ação. O Angular pode ignorar respostas cuja versão já tenha processado. As mãos adversárias expõem somente `handSize`; puzzles nunca expõem `alternativaCorreta`.
 
+## WebSocket do estado da partida
+
+Em vez de fazer polling em `GET /games/{id}/state`, o front pode abrir um socket por partida:
+
+```
+ws://localhost:3000/ws/games/{id}?token=<X-Player-Token>
+```
+
+O token vai na query porque o `WebSocket` do navegador não envia headers customizados. O handshake é recusado com `401` (token inválido), `403` (usuário fora do jogo) ou `404` (jogo inexistente). As ações continuam no REST; o socket serve só para receber e validar o estado.
+
+Mensagens do servidor:
+
+- `{"type":"STATE","state":{...}}`: o mesmo `GameStateResponse` do REST, com a mão de quem está conectado. É enviada ao conectar e após cada ação confirmada na partida, de qualquer jogador;
+- `{"type":"IN_SYNC","stateVersion":n}`: resposta a um `SYNC` quando o cliente já tem a versão atual;
+- `{"type":"ERROR","message":"..."}`.
+
+Para validar o estado local, o cliente envia `{"type":"SYNC","stateVersion":n}`. Se `n` estiver defasado, recebe `STATE`; se não, recebe `IN_SYNC`.
+
+```ts
+const ws = new WebSocket(`${wsUrl}/ws/games/${gameId}?token=${token}`);
+ws.onmessage = ({ data }) => {
+  const msg = JSON.parse(data);
+  if (msg.type === 'STATE' && msg.state.stateVersion > (this.state?.stateVersion ?? -1)) this.state = msg.state;
+};
+// ao voltar o foco da aba, por exemplo:
+ws.send(JSON.stringify({ type: 'SYNC', stateVersion: this.state.stateVersion }));
+```
+
 ## Catálogos
 
 As 40 cartas, dez skills e puzzles demonstrativos são carregados de forma idempotente. São somente leitura pela API:
